@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa Distribution | Pixie's Pantry Shop</title>
+    <style>
+        .product { margin: 20px; padding: 10px; border: 1px solid #ddd; display: inline-block; }
+        .product img { max-width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Medusa Distribution</h1>
+    <div class="products" id="products">
+        <!-- Products will be loaded dynamically -->
+    </div>
+    <script>
+        fetch('data/medusa_products_advanced.csv')
+            .then(response => response.text())
+            .then(data => {
+                const products = data.split('\n').slice(1); // Skip header
+                const productsContainer = document.getElementById('products');
+                products.forEach(product => {
+                    const [brand, name, sku, price, stock, imageUrl] = product.split(',');
+                    if (name && imageUrl) {
+                        productsContainer.innerHTML += `
+                            <div class="product">
+                                <img src="images/${imageUrl.split('/').pop()}" alt="${name}">
+                                <h3>${name}</h3>
+                                <p>SKU: ${sku}</p>
+                                <p>Price: $${price}</p>
+                                <p>Stock: ${stock}</p>
+                            </div>
+                        `;
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
