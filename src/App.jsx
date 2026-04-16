@@ -1,90 +1,44 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, ShoppingCart, Info, Check, Youtube, Instagram, MessageSquare, Mail } from 'lucide-react';
-
-// --- MOCK DATA ---
-const MOCK_PRODUCTS = [
- {
-   id: 'prod_1',
-   name: 'Obsidian Ultrasonic Diffuser',
-   category: 'Devices',
-   brand: 'AromaTech',
-   price: 129.99,
-   inStock: 14,
-   badge: 'Bestseller',
-   description: 'A heavy, cold-rolled steel and obsidian glass diffuser. Built like a tank, runs completely silent.',
-   imageUrl: '/api/placeholder/400/400'
- },
- {
-   id: 'prod_2',
-   name: 'Midnight Lavender Extract',
-   category: 'Botanicals',
-   brand: 'Pixie Reserve',
-   price: 34.00,
-   inStock: 42,
-   badge: 'Organic',
-   description: 'Pure, uncut lavender. None of that synthetic fragrance oil garbage. Sourced directly from high-altitude farms.',
-   imageUrl: '/api/placeholder/400/400'
- },
- {
-   id: 'prod_3',
-   name: 'Titanium Travel Vaporizer',
-   category: 'Devices',
-   brand: 'VapeDynamics',
-   price: 249.00,
-   inStock: 5,
-   badge: 'Low Stock',
-   description: 'Machined from aerospace-grade titanium. Heats up in 12 seconds and actually holds a charge for a full weekend.',
-   imageUrl: '/api/placeholder/400/400'
- },
- {
-   id: 'prod_4',
-   name: 'Eucalyptus & Mint Clarity Blend',
-   category: 'Botanicals',
-   brand: 'Pixie Reserve',
-   price: 28.50,
-   inStock: 0,
-   badge: 'Sold Out',
-   description: 'Sharp, clean, and cuts right through brain fog. We tested 14 different mint ratios before settling on this one.',
-   imageUrl: '/api/placeholder/400/400'
- },
- {
-   id: 'prod_5',
-   name: 'Desktop Glass Nebulizer',
-   category: 'Devices',
-   brand: 'AromaTech',
-   price: 185.00,
-   inStock: 8,
-   badge: 'Premium',
-   description: 'Uses pressurized air instead of water. Uses essential oils faster, but the scent saturation in the room is unmatched.',
-   imageUrl: '/api/placeholder/400/400'
- },
- {
-   id: 'prod_6',
-   name: 'Frankincense Resin Tears',
-   category: 'Botanicals',
-   brand: 'Ancient Roots',
-   price: 45.00,
-   inStock: 22,
-   badge: '',
-   description: 'Raw, unrefined tears. Requires a charcoal burner. It’s a bit of work, but the payoff is an incredibly rich, grounded scent profile.',
-   imageUrl: '/api/placeholder/400/400'
- }
-];
 
 export default function App() {
  const [searchTerm, setSearchTerm] = useState('');
  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+ const [products, setProducts] = useState([]);
+
+ // Load real Medusa products
+ useEffect(() => {
+   fetch('/medusa_products.json')
+     .then(res => res.json())
+     .then(data => setProducts(data))
+     .catch(err => console.error("Failed to load products:", err));
+ }, []);
 
  const categories = ['All Categories', 'Devices', 'Botanicals'];
 
+ // Fallback for local testing if products fail to load
+ const fallbackProducts = products.length > 0 ? products : [
+   {
+     id: 'prod_1',
+     name: 'Obsidian Ultrasonic Diffuser',
+     category: 'Devices',
+     brand: 'AromaTech',
+     price: 129.99,
+     inStock: 14,
+     badge: 'Bestseller',
+     description: 'A heavy, cold-rolled steel and obsidian glass diffuser. Built like a tank, runs completely silent.',
+     imageUrl: '/api/placeholder/400/400'
+   }
+ ];
+
  const filteredProducts = useMemo(() => {
-   return MOCK_PRODUCTS.filter(product => {
+   return fallbackProducts.filter(product => {
      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                        product.brand.toLowerCase().includes(searchTerm.toLowerCase());
      const matchesCategory = selectedCategory === 'All Categories' || product.category === selectedCategory;
      return matchesSearch && matchesCategory;
    });
- }, [searchTerm, selectedCategory]);
+ }, [searchTerm, selectedCategory, fallbackProducts]);
 
  return (
    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-stone-300">
