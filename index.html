@@ -3,116 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medusa Distribution | Pixie's Pantry Shop</title>
+    <title>Medusa Luxury Collection | Pixie's Pantry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f4d03f;
+            --dark: #0a0a12;
+            --darker: #1a1a2e;
+            --text: #e0e0e0;
+            --text-muted: #aaa;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1a1a2e;
-            color: #fff;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            line-height: 1.6;
         }
-        h1 {
+        
+        .header {
             text-align: center;
-            color: #d4af37;
-            margin-bottom: 30px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            color: var(--gold);
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 10px auto;
+        }
+        
         .filters {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 20px;
+            padding: 20px;
             flex-wrap: wrap;
+            background: var(--darker);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
         .filters select, .filters input {
-            padding: 8px 12px;
+            padding: 10px 15px;
             border-radius: 4px;
-            border: 1px solid #444;
-            background-color: #2a2a3e;
-            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-width: 150px;
         }
+        
         .products {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
             max-width: 1400px;
             margin: 0 auto;
+            padding: 30px;
         }
+        
         .product {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 15px;
-            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
         }
+        
         .product:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--gold-light);
         }
-        .product {
-            cursor: pointer;
+        
+        .product-image {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
         }
+        
         .product img {
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
-            border-radius: 4px;
-            background: #000;
-            transition: transform 0.3s;
+            transition: transform 0.5s ease;
         }
+        
         .product:hover img {
             transform: scale(1.05);
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-        .modal-content {
-            background-color: #1a1a2e;
-            margin: 5% auto;
+        
+        .product-info {
             padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 800px;
-            color: #fff;
-            position: relative;
         }
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 10px;
-            font-size: 2em;
-            cursor: pointer;
-            color: #aaa;
-        }
-        .modal img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 4px;
-        }
+        
         .product h3 {
-            margin: 10px 0;
-            font-size: 1em;
-            color: #fff;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            margin: 0 0 10px;
+            color: var(--text);
         }
-        .product p {
-            margin: 5px 0;
-            color: #aaa;
+        
+        .product .brand {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
         }
+        
         .product .price {
-            font-weight: bold;
-            color: #d4af37;
-            font-size: 1.2em;
+            font-size: 1.4em;
+            font-weight: 500;
+            color: var(--gold);
+            margin: 10px 0;
         }
+        
+        .product .price .msrp {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+        
+        .product .stock {
+            font-size: 0.9em;
+            color: var(--text-muted);
+        }
+        
         .badge {
             position: absolute;
             padding: 5px 10px;
@@ -122,32 +154,169 @@
             border-radius: 4px;
             color: #111;
         }
+        
         .badge-pick {
-            top: 10px;
-            left: 10px;
-            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
         }
+        
         .badge-sale {
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             background: #e74c3c;
         }
-        .badge-featured {
-            bottom: 10px;
-            left: 10px;
-            background: #9b59b6;
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow-y: auto;
         }
+        
+        .modal-content {
+            background-color: var(--darker);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 900px;
+            color: var(--text);
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        
+        .modal-image {
+            position: relative;
+        }
+        
+        .modal img.main {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .modal .gallery {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .modal .gallery img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .modal .gallery img.active {
+            border-color: var(--gold);
+        }
+        
+        .modal-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2em;
+            margin: 0 0 10px;
+            color: var(--text);
+        }
+        
+        .modal-info .brand {
+            font-size: 1.1em;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        
+        .modal-info .price {
+            font-size: 1.8em;
+            font-weight: 500;
+            color: var(--gold);
+            margin: 15px 0;
+        }
+        
+        .modal-info .price .msrp {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 0.7em;
+            margin-right: 10px;
+        }
+        
+        .modal-info .section {
+            margin: 20px 0;
+        }
+        
+        .modal-info .section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            color: var(--gold);
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5px;
+        }
+        
+        .modal-info .specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .modal-info .spec {
+            margin: 5px 0;
+        }
+        
+        .modal-info .spec-key {
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+        
+        .modal-info .spec-value {
+            color: var(--text);
+        }
+        
         .no-results {
             text-align: center;
             grid-column: 1 / -1;
-            color: #888;
+            color: var(--text-muted);
             font-size: 1.2em;
+            padding: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .products {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Medusa Distribution | Pixie's Pantry Shop</h1>
+    <header class="header">
+        <h1>Medusa Luxury Collection</h1>
+        <p>Curated premium aromatherapy devices and botanical blends</p>
+    </header>
     
     <div class="filters">
         <select id="brand-filter">
@@ -160,7 +329,6 @@
             <option value="">All Badges</option>
             <option value="pick">Pixie's Pick</option>
             <option value="sale">On Sale</option>
-            <option value="featured">Featured</option>
         </select>
         <input type="text" id="search" placeholder="Search products...">
     </div>
@@ -172,24 +340,46 @@
     <!-- Modal for product details -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modal-title">Product Name</h2>
-            <img id="modal-image" src="" alt="Product Image">
-            <p id="modal-description"></p>
-            <p>SKU: <span id="modal-sku"></span></p>
-            <p class="price">
-                <span id="modal-msrp" style="text-decoration: line-through; color: #888;"></span>
-                $<span id="modal-price"></span>
-            </p>
-            <p>Stock: <span id="modal-stock"></span></p>
-            <p>Wholesale: $<span id="modal-wholesale"></span></p>
-            <div id="modal-specs"></div>
+            <span class="modal-close">&times;</span>
+            <div class="modal-image">
+                <img class="main" id="modal-image" src="" alt="Product Image">
+                <div class="gallery" id="modal-gallery"></div>
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-title">Product Name</h2>
+                <p class="brand" id="modal-brand"></p>
+                <p class="price">
+                    <span class="msrp" id="modal-msrp"></span>
+                    $<span id="modal-price"></span>
+                </p>
+                <p class="stock">Stock: <span id="modal-stock"></span></p>
+                
+                <div class="section">
+                    <h3>Description</h3>
+                    <p id="modal-description"></p>
+                </div>
+                
+                <div class="section">
+                    <h3>Benefits</h3>
+                    <p id="modal-benefits"></p>
+                </div>
+                
+                <div class="section">
+                    <h3>Usage Instructions</h3>
+                    <p id="modal-usage"></p>
+                </div>
+                
+                <div class="section">
+                    <h3>Specifications</h3>
+                    <div class="specs" id="modal-specs"></div>
+                </div>
+            </div>
         </div>
     </div>
     
     <script>
         // Load product data
-        fetch('data/medusa_products_advanced.csv')
+        fetch('data/medusa_products_fixed.csv')
             .then(response => response.text())
             .then(data => {
                 const products = parseCSV(data);
@@ -213,15 +403,19 @@
                 if (!lines[i].trim()) continue;
                 const values = lines[i].split(',');
                 const product = {
-                    brand: values[0],
+                    brand: values[2],
                     name: values[1],
-                    sku: values[2],
+                    sku: values[0],
                     price: parseFloat(values[3]),
-                    stock: parseInt(values[4]),
-                    image_filename: values[5],
-                    is_pick: values[6] === 'True',
-                    is_sale: values[7] === 'True',
-                    is_featured: values[8] === 'True'
+                    msrp: parseFloat(values[4]),
+                    stock: parseInt(values[5]),
+                    image_filename: values[6],
+                    image_gallery: JSON.parse(values[7] || '[]'),
+                    description: values[8],
+                    benefits: values[9],
+                    usage: values[10],
+                    specs: JSON.parse(values[11] || '{}'),
+                    is_sale: values[12] === 'True'
                 };
                 products.push(product);
             }
@@ -239,8 +433,6 @@
                 option.textContent = brand;
                 brandFilter.appendChild(option);
             });
-            
-            // Categories would be populated similarly if available
         }
         
         // Render products with filters
@@ -255,9 +447,7 @@
             const filteredProducts = products.filter(product => {
                 const matchesBrand = !brandFilter || product.brand === brandFilter;
                 const matchesBadge = !badgeFilter || 
-                    (badgeFilter === 'pick' && product.is_pick) ||
-                    (badgeFilter === 'sale' && product.is_sale) ||
-                    (badgeFilter === 'featured' && product.is_featured);
+                    (badgeFilter === 'sale' && product.is_sale);
                 const matchesSearch = !searchQuery || 
                     product.name.toLowerCase().includes(searchQuery) ||
                     product.sku.toLowerCase().includes(searchQuery) ||
@@ -274,32 +464,98 @@
             filteredProducts.forEach(product => {
                 const productElement = document.createElement('div');
                 productElement.className = 'product';
+                productElement.onclick = () => openModal(product);
                 
                 // Add badges
-                if (product.is_pick) {
-                    productElement.innerHTML += '<div class="badge badge-pick">⭐ Pixie\'s Pick</div>';
-                }
                 if (product.is_sale) {
                     productElement.innerHTML += '<div class="badge badge-sale">🔥 On Sale</div>';
-                }
-                if (product.is_featured) {
-                    productElement.innerHTML += '<div class="badge badge-featured">⭐ Featured</div>';
                 }
                 
                 // Add product content
                 productElement.innerHTML += `
-                    <img src="images/${product.image_filename}" alt="${product.name}">
-                    <h3>${product.name}</h3>
-                    <p>SKU: ${product.sku}</p>
-                    <p class="price">
-                        ${product.msrp > product.price ? `<span style="text-decoration: line-through; color: #888;">$${product.msrp.toFixed(2)}</span> ` : ''}$${product.price.toFixed(2)}
-                    </p>
-                    <p>Stock: ${product.stock}</p>
-                    <p style="font-size: 0.8em; color: #aaa;">SKU: ${product.sku}</p>
+                    <div class="product-image">
+                        <img src="images/${product.image_filename}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <p class="brand">${product.brand}</p>
+                        <h3>${product.name}</h3>
+                        <p class="price">
+                            ${product.msrp > product.price ? `<span class="msrp">$${product.msrp.toFixed(2)}</span>` : ''}$${product.price.toFixed(2)}
+                        </p>
+                        <p class="stock">In Stock (${product.stock})</p>
+                    </div>
                 `;
                 
                 productsContainer.appendChild(productElement);
             });
+        }
+        
+        // Open modal with product details
+        function openModal(product) {
+            const modal = document.getElementById('product-modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalGallery = document.getElementById('modal-gallery');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBrand = document.getElementById('modal-brand');
+            const modalPrice = document.getElementById('modal-price');
+            const modalMsrp = document.getElementById('modal-msrp');
+            const modalStock = document.getElementById('modal-stock');
+            const modalDescription = document.getElementById('modal-description');
+            const modalBenefits = document.getElementById('modal-benefits');
+            const modalUsage = document.getElementById('modal-usage');
+            const modalSpecs = document.getElementById('modal-specs');
+            
+            modalImage.src = `images/${product.image_filename}`;
+            modalImage.alt = product.name;
+            
+            modalGallery.innerHTML = '';
+            product.image_gallery.forEach((img, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = `images/${img}`;
+                imgElement.alt = `${product.name} - Image ${index + 1}`;
+                imgElement.onclick = () => {
+                    modalImage.src = `images/${img}`;
+                    document.querySelectorAll('.modal .gallery img').forEach(i => i.classList.remove('active'));
+                    imgElement.classList.add('active');
+                };
+                if (index === 0) imgElement.classList.add('active');
+                modalGallery.appendChild(imgElement);
+            });
+            
+            modalTitle.textContent = product.name;
+            modalBrand.textContent = product.brand;
+            modalPrice.textContent = product.price.toFixed(2);
+            modalMsrp.textContent = product.msrp > product.price ? `$${product.msrp.toFixed(2)}` : '';
+            modalStock.textContent = product.stock;
+            modalDescription.textContent = product.description;
+            modalBenefits.textContent = product.benefits;
+            modalUsage.textContent = product.usage;
+            
+            modalSpecs.innerHTML = '';
+            for (const [key, value] of Object.entries(product.specs)) {
+                const specElement = document.createElement('div');
+                specElement.className = 'spec';
+                specElement.innerHTML = `
+                    <span class="spec-key">${key}:</span>
+                    <span class="spec-value">${value}</span>
+                `;
+                modalSpecs.appendChild(specElement);
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // Close modal
+        document.querySelector('.modal-close').onclick = function() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('product-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>
