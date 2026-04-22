@@ -572,21 +572,18 @@
             .then(response => response.json())
             .then(products => {
                 const productContainer = document.getElementById('product-container').querySelector('.row');
-                products.slice(0, 20).forEach(product => { // Limit to 20 products for testing
-                    if (product.status !== 'published' || !product.image) return;
-                    
-                    // Format price (e.g., 19.99 → $19.99)
-                    const price = parseFloat(product.price).toFixed(2);
+                products.forEach(product => {
+                    if (product.status !== 'published') return;
                     
                     const productElement = document.createElement('div');
                     productElement.className = 'col-md-4 mb-4';
                     productElement.innerHTML = `
-                        <div class="product card h-100" style="border: 1px solid #333; border-radius: 8px; overflow: hidden;">
-                            <img src="${product.image}" class="card-img-top" alt="${product.title}" style="height: 200px; object-fit: cover;">
-                            <div class="card-body" style="background: #1a1a2e; color: #e0e0e0;">
-                                <h5 class="card-title" style="color: #d4af37;">${product.title}</h5>
-                                <p class="card-text" style="font-size: 0.9em; color: #aaa;">${product.description.substring(0, 100)}...</p>
-                                <p class="price" style="font-weight: bold; color: #d4af37; font-size: 1.2em;">$${price}</p>
+                        <div class="product card h-100">
+                            <img src="${product.image}" class="card-img-top" alt="${product.title}">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.title}</h5>
+                                <p class="card-text">${product.description.substring(0, 100)}...</p>
+                                <p class="price">$${product.price}</p>
                             </div>
                         </div>
                     `;
