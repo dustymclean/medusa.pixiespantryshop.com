@@ -568,27 +568,39 @@
     
     <!-- Load Products -->
     <script>
+        console.log('Loading products...');
         fetch('data/products.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(products => {
+                console.log(`Loaded ${products.length} products.`);
                 const productContainer = document.getElementById('product-container').querySelector('.row');
+                let publishedCount = 0;
+                
                 products.forEach(product => {
-                    if (product.status !== 'published') return;
+                    if (product.status !== 'published' || !product.image) return;
+                    publishedCount++;
                     
                     const productElement = document.createElement('div');
                     productElement.className = 'col-md-4 mb-4';
                     productElement.innerHTML = `
                         <div class="product card h-100">
-                            <img src="${product.image}" class="card-img-top" alt="${product.title}">
+                            <img src="${product.image}" class="card-img-top" alt="${product.title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
                             <div class="card-body">
                                 <h5 class="card-title">${product.title}</h5>
                                 <p class="card-text">${product.description.substring(0, 100)}...</p>
-                                <p class="price">$${product.price}</p>
+                                <p class="price">$${parseFloat(product.price).toFixed(2)}</p>
                             </div>
                         </div>
                     `;
                     productContainer.appendChild(productElement);
                 });
+                
+                console.log(`Displayed ${publishedCount} published products.`);
             })
             .catch(error => console.error('Error loading products:', error));
     </script>
