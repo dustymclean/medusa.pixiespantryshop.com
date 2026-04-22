@@ -578,32 +578,51 @@
             })
             .then(products => {
                 console.log(`Loaded ${products.length} products.`);
-                const productContainer = document.getElementById('product-container').querySelector('.row');
+                const productContainer = document.querySelector('.products');
+                productContainer.innerHTML = ''; // Clear existing content
                 let publishedCount = 0;
                 
                 products.forEach(product => {
-                    if (product.status !== 'published' || !product.image) return;
+                    // Skip if missing critical data
+                    if (product.status !== 'published' || !product.image || !product.price) return;
+                    
+                    // Format price (e.g., "19.99" → "$19.99")
+                    let price;
+                    try {
+                        price = `$${parseFloat(product.price).toFixed(2)}`;
+                    } catch {
+                        price = "$0.00";
+                    }
+                    
+                    // Truncate description
+                    const description = product.description ? product.description.substring(0, 100) + '...' : '';
+                    
                     publishedCount++;
                     
-                    // Create product card
-                    const productElement = document.createElement('div');
-                    productElement.className = 'col-md-4 mb-4';
-                    productElement.innerHTML = `
-                        <div class="card h-100" style="border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #1a1a2e;">
-                            <img src="${product.image}" class="card-img-top" alt="${product.title}" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
-                            <div class="card-body" style="color: #e0e0e0;">
-                                <h5 class="card-title" style="color: #d4af37;">${product.title}</h5>
-                                <p class="card-text" style="font-size: 0.9em; color: #aaa;">${product.description.substring(0, 100)}...</p>
-                                <p class="price" style="font-weight: bold; color: #d4af37; font-size: 1.2em;">$${parseFloat(product.price).toFixed(2)}</p>
+                    // Create product box
+                    productContainer.innerHTML += `
+                        <div class="product">
+                            <img src="${product.image}" alt="${product.title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
+                            <div class="product-info">
+                                <h3>${product.title}</h3>
+                                <p>${description}</p>
+                                <p class="price">${price}</p>
                             </div>
                         </div>
                     `;
-                    productContainer.appendChild(productElement);
                 });
                 
                 console.log(`Displayed ${publishedCount} published products.`);
+                
+                // Add a message if no products are displayed
+                if (publishedCount === 0) {
+                    productContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No products available.</p>';
+                }
             })
-            .catch(error => console.error('Error loading products:', error));
+            .catch(error => {
+                console.error('Error loading products:', error);
+                document.querySelector('.products').innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Failed to load products.</p>';
+            });
     </script>
     
 </body>
