@@ -585,15 +585,16 @@
                     if (product.status !== 'published' || !product.image) return;
                     publishedCount++;
                     
+                    // Create product card
                     const productElement = document.createElement('div');
                     productElement.className = 'col-md-4 mb-4';
                     productElement.innerHTML = `
-                        <div class="product card h-100">
-                            <img src="${product.image}" class="card-img-top" alt="${product.title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.title}</h5>
-                                <p class="card-text">${product.description.substring(0, 100)}...</p>
-                                <p class="price">$${parseFloat(product.price).toFixed(2)}</p>
+                        <div class="card h-100" style="border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #1a1a2e;">
+                            <img src="${product.image}" class="card-img-top" alt="${product.title}" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
+                            <div class="card-body" style="color: #e0e0e0;">
+                                <h5 class="card-title" style="color: #d4af37;">${product.title}</h5>
+                                <p class="card-text" style="font-size: 0.9em; color: #aaa;">${product.description.substring(0, 100)}...</p>
+                                <p class="price" style="font-weight: bold; color: #d4af37; font-size: 1.2em;">$${parseFloat(product.price).toFixed(2)}</p>
                             </div>
                         </div>
                     `;
