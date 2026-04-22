@@ -558,5 +558,40 @@
             }
         }
     </script>
+    
+    <!-- Product Container -->
+    <div id="product-container" class="container mt-5">
+        <div class="row">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Load Products -->
+    <script>
+        fetch('data/products.json')
+            .then(response => response.json())
+            .then(products => {
+                const productContainer = document.getElementById('product-container').querySelector('.row');
+                products.forEach(product => {
+                    if (product.status !== 'published') return;
+                    
+                    const productElement = document.createElement('div');
+                    productElement.className = 'col-md-4 mb-4';
+                    productElement.innerHTML = `
+                        <div class="product card h-100">
+                            <img src="${product.image}" class="card-img-top" alt="${product.title}">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.title}</h5>
+                                <p class="card-text">${product.description.substring(0, 100)}...</p>
+                                <p class="price">$${product.price}</p>
+                            </div>
+                        </div>
+                    `;
+                    productContainer.appendChild(productElement);
+                });
+            })
+            .catch(error => console.error('Error loading products:', error));
+    </script>
+    
 </body>
 </html>
