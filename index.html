@@ -580,31 +580,31 @@
                 console.log(`Loaded ${products.length} products.`);
                 const productContainer = document.querySelector('.products');
                 productContainer.innerHTML = ''; // Clear existing content
-                let publishedCount = 0;
                 
                 products.forEach(product => {
-                    // Skip if missing critical data
-                    if (product.status !== 'published' || !product.image || !product.price) return;
+                    // Handle missing image
+                    const imageUrl = product.image || 'https://via.placeholder.com/300x200?text=No+Image';
                     
-                    // Format price (e.g., "19.99" → "$19.99")
+                    // Handle missing price
                     let price;
                     try {
-                        price = `$${parseFloat(product.price).toFixed(2)}`;
+                        price = product.price ? `$${parseFloat(product.price).toFixed(2)}` : "Price not available";
                     } catch {
-                        price = "$0.00";
+                        price = "Price not available";
                     }
                     
-                    // Truncate description
-                    const description = product.description ? product.description.substring(0, 100) + '...' : '';
+                    // Handle missing description
+                    const description = product.description ? product.description.substring(0, 100) + '...' : "No description available.";
                     
-                    publishedCount++;
+                    // Handle missing title
+                    const title = product.title || "Untitled Product";
                     
-                    // Create product box
+                    // Create product box (show all products, even with missing data)
                     productContainer.innerHTML += `
                         <div class="product">
-                            <img src="${product.image}" alt="${product.title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
+                            <img src="${imageUrl}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
                             <div class="product-info">
-                                <h3>${product.title}</h3>
+                                <h3>${title}</h3>
                                 <p>${description}</p>
                                 <p class="price">${price}</p>
                             </div>
@@ -612,12 +612,7 @@
                     `;
                 });
                 
-                console.log(`Displayed ${publishedCount} published products.`);
-                
-                // Add a message if no products are displayed
-                if (publishedCount === 0) {
-                    productContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No products available.</p>';
-                }
+                console.log(`Displayed all ${products.length} products.`);
             })
             .catch(error => {
                 console.error('Error loading products:', error);
