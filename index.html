@@ -315,7 +315,7 @@
 <body>
     <header class="header">
         <h1>Medusa Luxury Collection</h1>
-        <p>Curated premium aromatherapy devices and botanical blends</p>
+        <p>Searchable Medusa product catalog · historical reference, not live stock confirmation</p>
     </header>
     
     <div class="filters">
@@ -333,10 +333,12 @@
         <input type="text" id="search" placeholder="Search products...">
     </div>
     
-    <div class="products" id="products">
+    <div id="catalog-status" style="text-align:center;padding:16px;color:#d4af37" aria-live="polite">Loading catalog…</div><div class="products" id="products">
         <!-- Products will be loaded dynamically -->
     </div>
     
+    <div id="pagination" style="text-align:center;padding:28px"></div>
+    <p style="text-align:center;padding:12px;color:#aaa">Historical catalog data. Prices and availability must be verified with Medusa before ordering.</p>
     <!-- Modal for product details -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
@@ -378,247 +380,38 @@
     </div>
     
     <script>
-        // Load product data
-        fetch('data/medusa_products_fixed.csv')
-            .then(response => response.text())
-            .then(data => {
-                const products = parseCSV(data);
-                populateFilters(products);
-                renderProducts(products);
-                
-                // Add event listeners for filters
-                document.getElementById('brand-filter').addEventListener('change', () => renderProducts(products));
-                document.getElementById('category-filter').addEventListener('change', () => renderProducts(products));
-                document.getElementById('badge-filter').addEventListener('change', () => renderProducts(products));
-                document.getElementById('search').addEventListener('input', () => renderProducts(products));
-            });
-        
-        // Parse CSV data
-        function parseCSV(data) {
-            const lines = data.split('\n');
-            const headers = lines[0].split(',');
-            const products = [];
-            
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const values = lines[i].split(',');
-                const product = {
-                    brand: values[2],
-                    name: values[1],
-                    sku: values[0],
-                    price: parseFloat(values[3]),
-                    msrp: parseFloat(values[4]),
-                    stock: parseInt(values[5]),
-                    image_filename: values[6],
-                    image_gallery: JSON.parse(values[7] || '[]'),
-                    description: values[8],
-                    benefits: values[9],
-                    usage: values[10],
-                    specs: JSON.parse(values[11] || '{}'),
-                    is_sale: values[12] === 'True'
-                };
-                products.push(product);
-            }
-            return products;
-        }
-        
-        // Populate filter dropdowns
-        function populateFilters(products) {
-            const brands = [...new Set(products.map(p => p.brand))].sort();
-            const brandFilter = document.getElementById('brand-filter');
-            
-            brands.forEach(brand => {
-                const option = document.createElement('option');
-                option.value = brand;
-                option.textContent = brand;
-                brandFilter.appendChild(option);
-            });
-        }
-        
-        // Render products with filters
-        function renderProducts(products) {
-            const brandFilter = document.getElementById('brand-filter').value;
-            const badgeFilter = document.getElementById('badge-filter').value;
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            
-            const productsContainer = document.getElementById('products');
-            productsContainer.innerHTML = '';
-            
-            const filteredProducts = products.filter(product => {
-                const matchesBrand = !brandFilter || product.brand === brandFilter;
-                const matchesBadge = !badgeFilter || 
-                    (badgeFilter === 'sale' && product.is_sale);
-                const matchesSearch = !searchQuery || 
-                    product.name.toLowerCase().includes(searchQuery) ||
-                    product.sku.toLowerCase().includes(searchQuery) ||
-                    product.brand.toLowerCase().includes(searchQuery);
-                
-                return matchesBrand && matchesBadge && matchesSearch;
-            });
-            
-            if (filteredProducts.length === 0) {
-                productsContainer.innerHTML = '<div class="no-results">No products found. Try adjusting your filters.</div>';
-                return;
-            }
-            
-            filteredProducts.forEach(product => {
-                const productElement = document.createElement('div');
-                productElement.className = 'product';
-                productElement.onclick = () => openModal(product);
-                
-                // Add badges
-                if (product.is_sale) {
-                    productElement.innerHTML += '<div class="badge badge-sale">🔥 On Sale</div>';
-                }
-                
-                // Add product content
-                productElement.innerHTML += `
-                    <div class="product-image">
-                        <img src="images/${product.image_filename}" alt="${product.name}">
-                    </div>
-                    <div class="product-info">
-                        <p class="brand">${product.brand}</p>
-                        <h3>${product.name}</h3>
-                        <p class="price">
-                            ${product.msrp > product.price ? `<span class="msrp">$${product.msrp.toFixed(2)}</span>` : ''}$${product.price.toFixed(2)}
-                        </p>
-                        <p class="stock">In Stock (${product.stock})</p>
-                    </div>
-                `;
-                
-                productsContainer.appendChild(productElement);
-            });
-        }
-        
-        // Open modal with product details
-        function openModal(product) {
-            const modal = document.getElementById('product-modal');
-            const modalImage = document.getElementById('modal-image');
-            const modalGallery = document.getElementById('modal-gallery');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBrand = document.getElementById('modal-brand');
-            const modalPrice = document.getElementById('modal-price');
-            const modalMsrp = document.getElementById('modal-msrp');
-            const modalStock = document.getElementById('modal-stock');
-            const modalDescription = document.getElementById('modal-description');
-            const modalBenefits = document.getElementById('modal-benefits');
-            const modalUsage = document.getElementById('modal-usage');
-            const modalSpecs = document.getElementById('modal-specs');
-            
-            modalImage.src = `images/${product.image_filename}`;
-            modalImage.alt = product.name;
-            
-            modalGallery.innerHTML = '';
-            product.image_gallery.forEach((img, index) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = `images/${img}`;
-                imgElement.alt = `${product.name} - Image ${index + 1}`;
-                imgElement.onclick = () => {
-                    modalImage.src = `images/${img}`;
-                    document.querySelectorAll('.modal .gallery img').forEach(i => i.classList.remove('active'));
-                    imgElement.classList.add('active');
-                };
-                if (index === 0) imgElement.classList.add('active');
-                modalGallery.appendChild(imgElement);
-            });
-            
-            modalTitle.textContent = product.name;
-            modalBrand.textContent = product.brand;
-            modalPrice.textContent = product.price.toFixed(2);
-            modalMsrp.textContent = product.msrp > product.price ? `$${product.msrp.toFixed(2)}` : '';
-            modalStock.textContent = product.stock;
-            modalDescription.textContent = product.description;
-            modalBenefits.textContent = product.benefits;
-            modalUsage.textContent = product.usage;
-            
-            modalSpecs.innerHTML = '';
-            for (const [key, value] of Object.entries(product.specs)) {
-                const specElement = document.createElement('div');
-                specElement.className = 'spec';
-                specElement.innerHTML = `
-                    <span class="spec-key">${key}:</span>
-                    <span class="spec-value">${value}</span>
-                `;
-                modalSpecs.appendChild(specElement);
-            }
-            
-            modal.style.display = 'block';
-        }
-        
-        // Close modal
-        document.querySelector('.modal-close').onclick = function() {
-            document.getElementById('product-modal').style.display = 'none';
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('product-modal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        }
+    const $=id=>document.getElementById(id);
+    let products=[], results=[], currentPage=1; const PER_PAGE=48;
+    const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const strip=s=>String(s||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+    const filtered=()=>{
+      const search=$('search').value.trim().toLowerCase(), brand=$('brand-filter').value,category=$('category-filter').value;
+      results=products.filter(p=>(!brand||p.brand===brand)&&(!category||p.category===category)&&(!search||p.search.includes(search)));
+      currentPage=1; render();
+    };
+    function render(){
+      $('catalog-status').textContent=`${results.length.toLocaleString()} products found · page ${currentPage} of ${Math.max(1,Math.ceil(results.length/PER_PAGE))}`;
+      const first=(currentPage-1)*PER_PAGE, items=results.slice(first,first+PER_PAGE);
+      $('products').innerHTML=items.map(p=>`<article class="product" data-index="${p.i}" tabindex="0" role="button" aria-label="View ${safe(p.name)}"><div class="product-image">${p.image?`<img loading="lazy" src="${safe(p.image)}" alt="${safe(p.name)}" onerror="this.style.display='none'">`:''}</div><div class="product-info"><p class="brand">${safe(p.brand||p.category||'Medusa')}</p><h3>${safe(p.name)}</h3><p class="stock">SKU: ${safe(p.sku||'Not listed')}</p><p class="price">${p.price?safe(p.price):'Price not available'}</p></div></article>`).join('')||'<div class="no-results">No products found. Try a different search.</div>';
+      const pages=Math.ceil(results.length/PER_PAGE);
+      $('pagination').innerHTML=pages>1?`<button id="prev-page" ${currentPage===1?'disabled':''}>Previous</button> <span style="margin:0 14px">${currentPage} / ${pages}</span> <button id="next-page" ${currentPage===pages?'disabled':''}>Next</button>`:'';
+      if($('prev-page')) $('prev-page').onclick=()=>move(-1);
+      if($('next-page')) $('next-page').onclick=()=>move(1);
+      document.querySelectorAll('#products .product').forEach(el=>{const show=()=>openProduct(products[Number(el.dataset.index)]);el.onclick=show;el.onkeydown=e=>{if(e.key==='Enter')show()}});
+    }
+    function move(n){currentPage+=n;render();$('catalog-status').scrollIntoView({block:'start',behavior:'smooth'});}
+    function openProduct(p){$('modal-title').textContent=p.name;$('modal-brand').textContent=p.brand||p.category||'';$('modal-price').textContent=p.price||'Not available';$('modal-msrp').textContent='';$('modal-stock').textContent='Not verified';$('modal-description').textContent=p.description||'No description available';$('modal-benefits').textContent='Consult supplier product specifications';$('modal-usage').textContent='Refer to manufacturer instructions';$('modal-specs').textContent='SKU: '+(p.sku||'Not listed');$('modal-image').src=p.image||'';$('modal-gallery').innerHTML='';$('product-modal').style.display='block';}
+    document.querySelector('.modal-close').onclick=()=>{$('product-modal').style.display='none'};
+    $('product-modal').onclick=e=>{if(e.target===$('product-modal')) $('product-modal').style.display='none'};
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')$('product-modal').style.display='none'});
+    for(const id of ['brand-filter','category-filter','badge-filter']) $(id).addEventListener('change',filtered);
+    let debounce; $('search').addEventListener('input',()=>{clearTimeout(debounce);debounce=setTimeout(filtered,130)});
+    fetch('data/products.json').then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(data=>{
+      const known=new Set();
+      products=data.filter(p=>p&&p.title&&p.title.trim()).map(p=>({name:strip(p.title),brand:'',category:'Catalog',sku:p.sku||'',price:p.price?('$'+p.price):'',image:/^https:\/\//.test(p.image||'')?p.image:'',description:strip(p.description),status:p.status||'',handle:p.handle||''})).filter(p=>{const key=p.handle||p.sku||p.name;if(known.has(key))return false;known.add(key);return true;});
+      products.forEach((p,i)=>{p.i=i;p.search=[p.name,p.sku,p.category,p.description].join(' ').toLowerCase()});
+      results=products.slice();render();
+      $('catalog-status').textContent+= ' · source: existing Medusa GitHub catalog';
+    }).catch(e=>{$('catalog-status').textContent='Catalog could not load: '+e.message;});
     </script>
-    
-    <!-- Product Container -->
-    <div id="product-container" class="container mt-5">
-        <div class="row">
-            <!-- Products will be loaded here -->
-        </div>
-    </div>
-    
-    <!-- Load Products -->
-    <script>
-        console.log('Loading products...');
-        fetch('data/products.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(products => {
-                console.log(`Loaded ${products.length} products.`);
-                const productContainer = document.querySelector('.products');
-                productContainer.innerHTML = ''; // Clear existing content
-                
-                products.forEach(product => {
-                    // Handle missing image
-                    const imageUrl = product.image || 'https://via.placeholder.com/300x200?text=No+Image';
-                    
-                    // Handle missing price
-                    let price;
-                    try {
-                        price = product.price ? `$${parseFloat(product.price).toFixed(2)}` : "Price not available";
-                    } catch {
-                        price = "Price not available";
-                    }
-                    
-                    // Handle missing description
-                    const description = product.description ? product.description.substring(0, 100) + '...' : "No description available.";
-                    
-                    // Handle missing title
-                    const title = product.title || "Untitled Product";
-                    
-                    // Create product box (show all products, even with missing data)
-                    productContainer.innerHTML += `
-                        <div class="product">
-                            <img src="${imageUrl}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
-                            <div class="product-info">
-                                <h3>${title}</h3>
-                                <p>${description}</p>
-                                <p class="price">${price}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                console.log(`Displayed all ${products.length} products.`);
-            })
-            .catch(error => {
-                console.error('Error loading products:', error);
-                document.querySelector('.products').innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Failed to load products.</p>';
-            });
-    </script>
-    
-</body>
-</html>
+</body></html>
